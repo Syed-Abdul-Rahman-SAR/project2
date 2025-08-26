@@ -1,40 +1,42 @@
-const mongoose = require('mongoose');
-const cors = require('cors');
-const express = require('express');
+// ---------------------------
+// backend/app.js
+// ---------------------------
+
+// 1️⃣ Load environment variables first
 require("dotenv").config();
 
-connect()
-.then(res =>{
-    console.log("succesfully connected")
-})
-.catch((err) =>{
-    console.log(err);
-});
- 
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
 
-async function connect(){
-return await mongoose.connect(
-  "mongodb+srv://syedabdulrahman9505:Syed0987@cluster0.seyfqnm.mongodb.net/"
-);
+// 2️⃣ Debug: make sure dotenv is working
+console.log("Current working directory:", process.cwd());
+console.log("ENV file path:", require("path").resolve(".env"));
+console.log("MONGO_URL:", process.env.MONGO_URL); // Must print full URI
+
+// 3️⃣ Initialize Express app
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// 4️⃣ Basic health-check route
+app.get("/api/ping", (req, res) => res.json({ message: "pong" }));
+
+// 5️⃣ Connect to MongoDB
+async function connectDB() {
+  try {
+    await mongoose.connect(process.env.MONGO_URL, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log("MongoDB connected!");
+  } catch (err) {
+    console.error("MongoDB connection error:", err);
+  }
 }
 
+connectDB();
 
-//initialize express app
-const app = express();
-
-//middleware
-app.use(cors()); //enable corse
-app.use(express.json()); // parse json request bodies
-
-//basic health-check route
-app.get('/api/ping',(req,res)=>{
-    res.status(200).json({message:'pong'});
-});
-
-//start server
+// 6️⃣ Start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT,()=>{
-    console.log(`Server running on post ${PORT}`);
-    
-});
-
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
