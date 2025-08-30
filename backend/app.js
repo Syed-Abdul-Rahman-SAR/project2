@@ -40,3 +40,10 @@ connectDB();
 // 6️⃣ Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+
+const authRoutes = require("./routes/auth"); // correct path
+app.use("/api", authRoutes);
+
+const protectedRoutes = require("./routes/protected"); // adjust path if needed
+app.use("/api", protectedRoutes);
